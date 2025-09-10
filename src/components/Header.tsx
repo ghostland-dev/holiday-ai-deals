@@ -1,9 +1,12 @@
 import { Button } from "@/components/ui/button";
-import { Plane, Menu, Sparkles } from "lucide-react";
+import { Plane, Menu, Sparkles, User } from "lucide-react";
 import { useState } from "react";
+import AuthModal from "./AuthModal";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [user, setUser] = useState<any>(null);
 
   return (
     <header className="fixed top-0 w-full z-50 bg-white/95 backdrop-blur-sm border-b border-border shadow-sm">
@@ -38,16 +41,41 @@ const Header = () => {
 
           {/* CTA Buttons */}
           <div className="hidden md:flex items-center space-x-3">
-            <Button variant="outline" size="sm">
-              Connexion
-            </Button>
-            <Button 
-              size="sm" 
-              className="bg-gradient-sunset hover:shadow-glow transition-all duration-300"
-            >
-              <Sparkles className="w-4 h-4 mr-1" />
-              Générer un Pack
-            </Button>
+            {user ? (
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 bg-gradient-ocean rounded-full flex items-center justify-center">
+                    <User className="w-4 h-4 text-white" />
+                  </div>
+                  <span className="text-sm font-medium">{user.firstName || user.email}</span>
+                </div>
+                <Button 
+                  size="sm" 
+                  className="bg-gradient-sunset hover:shadow-glow transition-all duration-300"
+                >
+                  <Sparkles className="w-4 h-4 mr-1" />
+                  Générer un Pack
+                </Button>
+              </div>
+            ) : (
+              <>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => setIsAuthModalOpen(true)}
+                >
+                  Connexion
+                </Button>
+                <Button 
+                  size="sm" 
+                  className="bg-gradient-sunset hover:shadow-glow transition-all duration-300"
+                  onClick={() => setIsAuthModalOpen(true)}
+                >
+                  <Sparkles className="w-4 h-4 mr-1" />
+                  Générer un Pack
+                </Button>
+              </>
+            )}
           </div>
 
           {/* Mobile menu button */}
@@ -78,21 +106,55 @@ const Header = () => {
                 À Propos
               </a>
               <div className="flex flex-col space-y-2 pt-4 border-t border-border">
-                <Button variant="outline" size="sm">
-                  Connexion
-                </Button>
-                <Button 
-                  size="sm" 
-                  className="bg-gradient-sunset hover:shadow-glow transition-all duration-300"
-                >
-                  <Sparkles className="w-4 h-4 mr-1" />
-                  Générer un Pack
-                </Button>
+                {user ? (
+                  <>
+                    <div className="flex items-center gap-2 p-2">
+                      <div className="w-8 h-8 bg-gradient-ocean rounded-full flex items-center justify-center">
+                        <User className="w-4 h-4 text-white" />
+                      </div>
+                      <span className="text-sm font-medium">{user.firstName || user.email}</span>
+                    </div>
+                    <Button 
+                      size="sm" 
+                      className="bg-gradient-sunset hover:shadow-glow transition-all duration-300"
+                    >
+                      <Sparkles className="w-4 h-4 mr-1" />
+                      Générer un Pack
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => setIsAuthModalOpen(true)}
+                    >
+                      Connexion
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      className="bg-gradient-sunset hover:shadow-glow transition-all duration-300"
+                      onClick={() => setIsAuthModalOpen(true)}
+                    >
+                      <Sparkles className="w-4 h-4 mr-1" />
+                      Générer un Pack
+                    </Button>
+                  </>
+                )}
               </div>
             </nav>
           </div>
         )}
       </div>
+
+      <AuthModal 
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        onSuccess={(userData) => {
+          setUser(userData.user);
+          setIsAuthModalOpen(false);
+        }}
+      />
     </header>
   );
 };

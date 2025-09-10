@@ -4,21 +4,27 @@ import AIPacksSection from "@/components/AIPacksSection";
 import DestinationsSection from "@/components/DestinationsSection";
 import TestimonialsSection from "@/components/TestimonialsSection";
 import AboutSection from "@/components/AboutSection";
+import SEOHead from "@/components/SEOHead";
+import PerformanceMonitor from "@/components/PerformanceMonitor";
 
 const Index = () => {
   return (
-    <div className="w-full">
-      <HeroSection />
-      <section id="deals">
-        <DealsSection />
-      </section>
-      <section id="ai-packs">
-        <AIPacksSection />
-      </section>
-      <DestinationsSection />
-      <TestimonialsSection />
-      <AboutSection />
-    </div>
+    <>
+      <SEOHead />
+      <PerformanceMonitor />
+      <div className="w-full">
+        <HeroSection />
+        <section id="deals">
+          <DealsSection />
+        </section>
+        <section id="ai-packs">
+          <AIPacksSection />
+        </section>
+        <DestinationsSection />
+        <TestimonialsSection />
+        <AboutSection />
+      </div>
+    </>
   );
 };
 

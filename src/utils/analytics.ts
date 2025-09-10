@@ -138,6 +138,26 @@ class Analytics {
   }
 
   // Track errors for monitoring
+  // Identify user for tracking
+  identify(userId: string, traits?: Record<string, any>) {
+    try {
+      if (typeof window !== 'undefined' && 'gtag' in window) {
+        (window as any).gtag('config', 'G-XXXXXXXXXX', {
+          user_id: userId,
+          custom_map: traits
+        });
+      }
+      
+      // Store user info for future events
+      if (typeof window !== 'undefined') {
+        (window as any).__analytics_user = { id: userId, ...traits };
+      }
+    } catch (error) {
+      console.warn('User identification failed:', error);
+    }
+  }
+
+  // Track errors for monitoring
   trackError(error: Error, context?: string) {
     this.track({
       action: 'javascript_error',

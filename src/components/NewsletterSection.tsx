@@ -1,196 +1,156 @@
-import { Card, CardContent } from "@/components/ui/card";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { Mail, Gift, TrendingUp, Zap, Check } from "lucide-react";
-import { useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Mail, Send, CheckCircle, Gift } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
 const NewsletterSection = () => {
-  const { toast } = useToast();
   const [email, setEmail] = useState("");
-  const [isSubscribing, setIsSubscribing] = useState(false);
+  const [isSubscribed, setIsSubscribed] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const { toast } = useToast();
 
-  const handleSubscribe = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) return;
-    
-    setIsSubscribing(true);
-    
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    toast({
-      title: "Inscription réussie ! 🎉",
-      description: "Vous recevrez nos meilleurs deals directement dans votre boîte mail.",
-    });
-    
-    setEmail("");
-    setIsSubscribing(false);
+
+    setLoading(true);
+    try {
+      const { error } = await supabase.functions.invoke('newsletter-subscribe', {
+        body: { email, preferences: ['deals', 'tips'] }
+      });
+
+      if (error) throw error;
+
+      setIsSubscribed(true);
+      setEmail("");
+      toast({
+        title: "Inscription réussie !",
+        description: "Vous recevrez nos meilleures offres par email.",
+      });
+    } catch (error) {
+      console.error('Newsletter subscription error:', error);
+      toast({
+        title: "Erreur d'inscription",
+        description: "Veuillez réessayer plus tard.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const benefits = [
-    {
-      icon: TrendingUp,
-      title: "Deals Exclusifs",
-      description: "Accès prioritaire aux meilleures offres IA"
-    },
-    {
-      icon: Zap,
-      title: "Alertes Flash",
-      description: "Notifications des deals à durée limitée"
-    },
-    {
-      icon: Gift,
-      title: "Bonus Membres",
-      description: "Codes promo et offres réservées aux abonnés"
-    }
-  ];
-
   return (
-    <section className="py-20 bg-gradient-to-br from-primary/5 via-background to-accent/5">
+    <section className="py-20 bg-gradient-to-b from-background to-secondary/20">
       <div className="container mx-auto px-4">
-        <Card className="max-w-4xl mx-auto overflow-hidden border-0 shadow-card">
-          <CardContent className="p-0">
-            <div className="grid grid-cols-1 lg:grid-cols-2">
-              {/* Left Side - Content */}
-              <div className="p-8 lg:p-12">
-                <div className="inline-flex items-center gap-2 bg-gradient-sunset px-3 py-1 rounded-full text-white text-sm font-medium mb-6">
-                  <Mail className="w-4 h-4" />
-                  Newsletter Exclusive
-                </div>
-                
-                <h2 className="text-3xl lg:text-4xl font-bold mb-4">
-                  Ne Ratez Plus Aucun
-                  <span className="block text-primary">Deal Exceptionnel</span>
-                </h2>
-                
-                <p className="text-lg text-muted-foreground mb-6">
-                  Rejoignez plus de <strong>50,000 voyageurs malins</strong> qui reçoivent 
-                  nos deals IA personnalisés et économisent en moyenne <strong>35% sur leurs voyages</strong>.
-                </p>
+        <div className="text-center mb-16">
+          <h2 className="text-4xl md:text-5xl font-bold mb-6">
+            <span className="bg-gradient-sunset bg-clip-text text-transparent">
+              Newsletter Exclusive
+            </span>
+            <br />
+            <span className="text-foreground">Deals & Conseils IA</span>
+          </h2>
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            Rejoignez +15,000 voyageurs qui économisent en moyenne 35% grâce à nos alertes IA personnalisées
+          </p>
+        </div>
 
-                {/* Benefits */}
-                <div className="space-y-4 mb-8">
-                  {benefits.map((benefit, index) => {
-                    const Icon = benefit.icon;
-                    return (
-                      <div key={index} className="flex items-start gap-3">
-                        <div className="p-2 bg-primary/10 rounded-lg flex-shrink-0">
-                          <Icon className="w-4 h-4 text-primary" />
-                        </div>
-                        <div>
-                          <h4 className="font-semibold text-sm">{benefit.title}</h4>
-                          <p className="text-sm text-muted-foreground">{benefit.description}</p>
-                        </div>
-                      </div>
-                    );
-                  })}
+        <div className="max-w-4xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            {/* Left side - Benefits */}
+            <div className="space-y-6">
+              <div className="flex items-start gap-4">
+                <div className="p-3 bg-gradient-ocean rounded-lg">
+                  <Gift className="w-6 h-6 text-white" />
                 </div>
-
-                {/* Newsletter Form */}
-                <form onSubmit={handleSubscribe} className="space-y-4">
-                  <div className="flex flex-col sm:flex-row gap-3">
-                    <Input
-                      type="email"
-                      placeholder="votre@email.com"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="flex-1 h-12"
-                      required
-                    />
-                    <Button 
-                      type="submit"
-                      disabled={isSubscribing}
-                      className="bg-gradient-ocean hover:shadow-glow transition-all duration-300 h-12 px-8"
-                    >
-                      {isSubscribing ? (
-                        <>
-                          <Mail className="w-4 h-4 mr-2 animate-pulse" />
-                          Inscription...
-                        </>
-                      ) : (
-                        <>
-                          <Mail className="w-4 h-4 mr-2" />
-                          S'abonner Gratuitement
-                        </>
-                      )}
-                    </Button>
-                  </div>
-                  
-                  <p className="text-xs text-muted-foreground flex items-center gap-2">
-                    <Check className="w-3 h-3 text-green-500" />
-                    Gratuit • Désabonnement en 1 clic • Pas de spam
+                <div>
+                  <h3 className="text-lg font-semibold mb-2">Deals Exclusifs</h3>
+                  <p className="text-muted-foreground">
+                    Accès prioritaire aux offres négociées par notre IA, jusqu'à -70% sur les prix publics
                   </p>
-                </form>
+                </div>
               </div>
 
-              {/* Right Side - Visual */}
-              <div className="relative bg-gradient-to-br from-primary/10 to-accent/10 p-8 lg:p-12 flex items-center justify-center">
-                <div className="relative">
-                  {/* Floating Cards */}
-                  <div className="absolute -top-4 -left-4 transform rotate-12">
-                    <Card className="w-48 p-4 shadow-lg">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-gradient-ocean rounded-full"></div>
-                        <div>
-                          <div className="h-2 bg-muted rounded w-16 mb-1"></div>
-                          <div className="h-2 bg-muted rounded w-12"></div>
-                        </div>
-                      </div>
-                    </Card>
-                  </div>
-                  
-                  <div className="absolute -bottom-4 -right-4 transform -rotate-12">
-                    <Card className="w-48 p-4 shadow-lg">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-gradient-sunset rounded-full"></div>
-                        <div>
-                          <div className="h-2 bg-muted rounded w-20 mb-1"></div>
-                          <div className="h-2 bg-muted rounded w-16"></div>
-                        </div>
-                      </div>
-                    </Card>
-                  </div>
+              <div className="flex items-start gap-4">
+                <div className="p-3 bg-gradient-sunset rounded-lg">
+                  <Mail className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold mb-2">Alertes Personnalisées</h3>
+                  <p className="text-muted-foreground">
+                    Recevez uniquement les deals qui correspondent à vos préférences de voyage
+                  </p>
+                </div>
+              </div>
 
-                  {/* Main Card */}
-                  <Card className="w-64 p-6 shadow-xl border-2 border-primary/20">
-                    <div className="text-center">
-                      <div className="w-16 h-16 bg-gradient-ocean rounded-full flex items-center justify-center mx-auto mb-4">
-                        <Mail className="w-8 h-8 text-white" />
-                      </div>
-                      <h3 className="font-bold text-lg mb-2">Deal Alert!</h3>
-                      <p className="text-sm text-muted-foreground mb-4">
-                        Maldives Resort -47%
-                      </p>
-                      <Badge className="bg-accent text-accent-foreground">
-                        Seulement 899€
-                      </Badge>
-                    </div>
-                  </Card>
-
-                  {/* Decorative Elements */}
-                  <div className="absolute top-8 right-8 w-4 h-4 bg-primary rounded-full animate-pulse"></div>
-                  <div className="absolute bottom-8 left-8 w-3 h-3 bg-accent rounded-full animate-pulse delay-300"></div>
-                  <div className="absolute top-16 left-16 w-2 h-2 bg-primary/50 rounded-full animate-pulse delay-700"></div>
+              <div className="flex items-start gap-4">
+                <div className="p-3 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg">
+                  <CheckCircle className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold mb-2">Conseils d'Experts</h3>
+                  <p className="text-muted-foreground">
+                    Tips exclusifs pour optimiser vos réservations et éviter les pièges
+                  </p>
                 </div>
               </div>
             </div>
-          </CardContent>
-        </Card>
 
-        {/* Social Proof */}
-        <div className="text-center mt-12">
-          <div className="flex items-center justify-center gap-8 text-muted-foreground">
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-              <span className="text-sm">+2,300 inscrits cette semaine</span>
-            </div>
-            <div className="hidden md:block w-px h-4 bg-border"></div>
-            <div className="flex items-center gap-2">
-              <TrendingUp className="w-4 h-4" />
-              <span className="text-sm">€1.2M d'économies générées</span>
-            </div>
+            {/* Right side - Form */}
+            <Card className="p-8 shadow-card">
+              <CardContent className="space-y-6">
+                {isSubscribed ? (
+                  <div className="text-center space-y-4">
+                    <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto">
+                      <CheckCircle className="w-8 h-8 text-green-600" />
+                    </div>
+                    <h3 className="text-xl font-semibold text-green-600">
+                      Inscription Confirmée !
+                    </h3>
+                    <p className="text-muted-foreground">
+                      Vous recevrez votre premier deal personnalisé dans les prochaines heures
+                    </p>
+                  </div>
+                ) : (
+                  <>
+                    <div className="text-center">
+                      <h3 className="text-2xl font-bold mb-2">
+                        Recevez nos Meilleurs Deals
+                      </h3>
+                      <p className="text-muted-foreground">
+                        100% gratuit • Désabonnement en 1 clic
+                      </p>
+                    </div>
+
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                      <div className="space-y-2">
+                        <Input
+                          type="email"
+                          placeholder="votre@email.com"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          className="h-12 text-lg"
+                          required
+                        />
+                      </div>
+                      
+                      <Button 
+                        type="submit" 
+                        size="lg" 
+                        disabled={loading}
+                        className="w-full bg-gradient-sunset hover:shadow-glow transition-all duration-300"
+                      >
+                        <Send className="w-4 h-4 mr-2" />
+                        {loading ? "Inscription..." : "S'inscrire Gratuitement"}
+                      </Button>
+                    </form>
+                  </>
+                )}
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>

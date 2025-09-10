@@ -1,12 +1,13 @@
 import { Button } from "@/components/ui/button";
-import { Plane, Menu, Sparkles, User } from "lucide-react";
+import { Plane, Menu, Sparkles, User, LogOut } from "lucide-react";
 import { useState } from "react";
 import AuthModal from "./AuthModal";
+import { useAuthContext } from "./AuthProvider";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const [user, setUser] = useState<any>(null);
+  const { user, signOut } = useAuthContext();
 
   return (
     <header className="fixed top-0 w-full z-50 bg-white/95 backdrop-blur-sm border-b border-border shadow-sm">
@@ -46,11 +47,20 @@ const Header = () => {
           <div className="hidden md:flex items-center space-x-3">
             {user ? (
               <div className="flex items-center gap-3">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 bg-gradient-ocean rounded-full flex items-center justify-center">
-                    <User className="w-4 h-4 text-white" />
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 bg-gradient-ocean rounded-full flex items-center justify-center">
+                      <User className="w-4 h-4 text-white" />
+                    </div>
+                    <span className="text-sm font-medium">{user.email}</span>
                   </div>
-                  <span className="text-sm font-medium">{user.firstName || user.email}</span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={signOut}
+                  >
+                    <LogOut className="w-4 h-4" />
+                  </Button>
                 </div>
                 <Button 
                   size="sm" 
@@ -111,11 +121,20 @@ const Header = () => {
               <div className="flex flex-col space-y-2 pt-4 border-t border-border">
                 {user ? (
                   <>
-                    <div className="flex items-center gap-2 p-2">
-                      <div className="w-8 h-8 bg-gradient-ocean rounded-full flex items-center justify-center">
-                        <User className="w-4 h-4 text-white" />
+                    <div className="flex items-center justify-between p-2">
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 bg-gradient-ocean rounded-full flex items-center justify-center">
+                          <User className="w-4 h-4 text-white" />
+                        </div>
+                        <span className="text-sm font-medium">{user.email}</span>
                       </div>
-                      <span className="text-sm font-medium">{user.firstName || user.email}</span>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={signOut}
+                      >
+                        <LogOut className="w-4 h-4" />
+                      </Button>
                     </div>
                     <Button 
                       size="sm" 
@@ -153,8 +172,7 @@ const Header = () => {
       <AuthModal 
         isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}
-        onSuccess={(userData) => {
-          setUser(userData.user);
+        onSuccess={() => {
           setIsAuthModalOpen(false);
         }}
       />

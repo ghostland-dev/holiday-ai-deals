@@ -14,6 +14,11 @@ import Destinations from "./pages/Destinations";
 import Wishlist from "./pages/Wishlist";
 import Reviews from "./pages/Reviews";
 import FAQ from "./pages/FAQ";
+import Deals from "./pages/Deals";
+import DealDetail from "./pages/DealDetail";
+import Profile from "./pages/Profile";
+import ProfileSettings from "./pages/profile/Settings";
+import Insurance from "./pages/Insurance";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import ErrorBoundary from "./components/ErrorBoundary";
@@ -62,9 +67,22 @@ const App = () => (
                     <Route path="/" element={<Index />} />
                     <Route path="/about" element={<About />} />
                     <Route path="/destinations" element={<Destinations />} />
+                    <Route path="/deals" element={<Deals />} />
+                    <Route path="/deals/:id" element={<DealDetail />} />
                     <Route path="/wishlist" element={<Wishlist />} />
                     <Route path="/reviews" element={<Reviews />} />
                     <Route path="/faq" element={<FAQ />} />
+                    <Route path="/insurance" element={<Insurance />} />
+                    <Route path="/profile" element={
+                      <ProtectedRoute>
+                        <Profile />
+                      </ProtectedRoute>
+                    } />
+                    <Route path="/profile/settings" element={
+                      <ProtectedRoute>
+                        <ProfileSettings />
+                      </ProtectedRoute>
+                    } />
                     <Route path="/success" element={<Success />} />
                     <Route 
                       path="/login" 

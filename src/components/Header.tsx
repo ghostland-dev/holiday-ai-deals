@@ -24,7 +24,7 @@ const Header = () => {
           </div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-8">
+            <nav className="hidden md:flex items-center space-x-8">
             <a href="#deals" className="text-foreground hover:text-primary transition-colors font-medium">
               Deals
             </a>
@@ -34,8 +34,11 @@ const Header = () => {
             <a href="#destinations" className="text-foreground hover:text-primary transition-colors font-medium">
               Destinations
             </a>
-            <a href="#about" className="text-foreground hover:text-primary transition-colors font-medium">
-              À Propos
+            <a href="/blog" className="text-foreground hover:text-primary transition-colors font-medium">
+              Blog
+            </a>
+            <a href="/contact" className="text-foreground hover:text-primary transition-colors font-medium">
+              Contact
             </a>
           </nav>
 

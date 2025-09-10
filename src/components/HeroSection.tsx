@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Calendar, MapPin, Users, Search } from "lucide-react";
 import { useState } from "react";
-import heroImage from "@/assets/hero-travel-bg.jpg";
+import heroImage from "@/assets/hero-travel-main.jpg";
 
 const HeroSection = () => {
   const [searchData, setSearchData] = useState({

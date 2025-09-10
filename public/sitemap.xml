@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://travelai.com/</loc>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+    <lastmod>2024-01-15</lastmod>
+  </url>
+  <url>
+    <loc>https://travelai.com/blog</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <lastmod>2024-01-15</lastmod>
+  </url>
+  <url>
+    <loc>https://travelai.com/contact</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <lastmod>2024-01-15</lastmod>
+  </url>
+  <url>
+    <loc>https://travelai.com/privacy</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+    <lastmod>2024-01-15</lastmod>
+  </url>
+  <url>
+    <loc>https://travelai.com/terms</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+    <lastmod>2024-01-15</lastmod>
+  </url>
+</urlset>

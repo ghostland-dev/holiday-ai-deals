@@ -9,9 +9,13 @@ import ChatSupport from "@/components/ChatSupport";
 import SEOHead from "@/components/SEOHead";
 import PerformanceMonitor from "@/components/PerformanceMonitor";
 import { usePageTracking } from "@/components/LinkTracker";
+import { monitoring } from "@/utils/monitoring";
 
 const Index = () => {
   usePageTracking();
+  
+  // Initialize monitoring
+  monitoring.logUserAction('page_visit', { page: 'home' });
   
   return (
     <>

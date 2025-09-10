@@ -10,7 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { 
   Star, MapPin, Calendar, Users, Heart, Share2, Clock, 
-  Plane, Wifi, Car, Coffee, Utensils, Waves, 
+  Plane, Wifi, Car, Coffee, Utensils, Droplets, 
   CheckCircle, AlertCircle, ArrowLeft, Phone, Mail,
   Camera, Shield, Award, Zap
 } from "lucide-react";
@@ -53,7 +53,7 @@ const DealDetail = () => {
       { icon: Car, name: "Parking privé" },
       { icon: Coffee, name: "Room service 24h" },
       { icon: Utensils, name: "Restaurant gastronomique" },
-      { icon: Waves, name: "Spa & Wellness" },
+      { icon: Droplets, name: "Spa & Wellness" },
       { icon: Shield, name: "Coffre-fort" }
     ],
     highlights: [

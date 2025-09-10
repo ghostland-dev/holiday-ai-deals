@@ -2,9 +2,12 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ExternalLink, MapPin, Clock, Star, Plane, Building, Package, Activity } from "lucide-react";
+import { ExternalLink, MapPin, Clock, Star, Plane, Building, Package, Activity, Heart } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { monitoring } from "@/utils/monitoring";
+import { useAuthContext } from '@/components/AuthProvider';
+import { useToast } from '@/hooks/use-toast';
+import AuthModal from './AuthModal';
 
 interface Deal {
   id: string;
@@ -38,6 +41,10 @@ const DealsGrid = () => {
   const [deals, setDeals] = useState<Deal[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [wishlisted, setWishlisted] = useState<Record<string, boolean>>({});
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const { user } = useAuthContext();
+  const { toast } = useToast();
 
   useEffect(() => {
     fetchDeals();
@@ -83,6 +90,53 @@ const DealsGrid = () => {
       });
     } catch (err) {
       console.error('Error tracking deal click:', err);
+    }
+  };
+
+  const handleWishlist = async (dealId: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (!user) {
+      setShowAuthModal(true);
+      return;
+    }
+
+    const isCurrentlyWishlisted = wishlisted[dealId];
+
+    // Toggle wishlist status locally for immediate feedback
+    setWishlisted(prev => ({
+      ...prev,
+      [dealId]: !prev[dealId]
+    }));
+
+    try {
+      const { error } = await supabase.functions.invoke('manage-wishlist', {
+        body: { 
+          action: isCurrentlyWishlisted ? 'remove' : 'add',
+          deal_id: dealId
+        }
+      });
+
+      if (error) throw error;
+      
+      toast({
+        title: isCurrentlyWishlisted ? "Removed from wishlist" : "Added to wishlist",
+        description: isCurrentlyWishlisted ? "Deal removed from your favorites" : "Deal saved to your wishlist"
+      });
+    } catch (error) {
+      // Revert the optimistic update on error
+      setWishlisted(prev => ({
+        ...prev,
+        [dealId]: !prev[dealId]
+      }));
+      
+      console.error('Error managing wishlist:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update wishlist",
+        variant: "destructive"
+      });
     }
   };
 
@@ -137,12 +191,22 @@ const DealsGrid = () => {
                   <Icon className="w-4 h-4 text-primary" />
                   <Badge variant="secondary">{deal.category}</Badge>
                 </div>
-                {deal.featured && (
-                  <Badge className="bg-gradient-sunset text-white">
-                    <Star className="w-3 h-3 mr-1" />
-                    Populaire
-                  </Badge>
-                )}
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={(e) => handleWishlist(deal.id, e)}
+                    className={`p-2 ${wishlisted[deal.id] ? 'text-red-500' : 'text-muted-foreground hover:text-red-500'}`}
+                  >
+                    <Heart className={`w-4 h-4 ${wishlisted[deal.id] ? 'fill-current' : ''}`} />
+                  </Button>
+                  {deal.featured && (
+                    <Badge className="bg-gradient-sunset text-white">
+                      <Star className="w-3 h-3 mr-1" />
+                      Populaire
+                    </Badge>
+                  )}
+                </div>
               </div>
               <CardTitle className="text-lg leading-tight">{deal.title}</CardTitle>
               <div className="flex items-center gap-1 text-muted-foreground">
@@ -205,6 +269,12 @@ const DealsGrid = () => {
           </Card>
         );
       })}
+
+      <AuthModal 
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        onSuccess={() => setShowAuthModal(false)}
+      />
     </div>
   );
 };

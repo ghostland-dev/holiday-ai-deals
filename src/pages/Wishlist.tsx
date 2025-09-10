@@ -6,91 +6,93 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Heart, Trash2, Star, MapPin, Calendar, Euro } from "lucide-react";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuthContext } from '@/components/AuthProvider';
 import EmptyState from "@/components/EmptyState";
-import { toast } from "sonner";
+import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
+import { useNavigate } from 'react-router-dom';
 
 interface WishlistItem {
   id: string;
-  dealId: string;
-  title: string;
-  destination: string;
-  price: number;
-  originalPrice?: number;
-  currency: string;
-  image?: string;
-  rating?: number;
-  provider: string;
-  availableFrom?: string;
-  availableTo?: string;
-  addedAt: string;
+  deal_id: string;
+  deal_title: string;
+  deal_destination: string;
+  deal_price: number;
+  deal_currency: string;
+  deal_image_url?: string;
+  deal_category: string;
+  deal_tags: string[];
+  created_at: string;
 }
 
 const Wishlist = () => {
-  const { user } = useAuth();
+  const { user } = useAuthContext();
   const [wishlistItems, setWishlistItems] = useState<WishlistItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
+  const navigate = useNavigate();
 
-  // Sample data - in a real app, this would come from your database
   useEffect(() => {
     if (user) {
-      // Simulate loading wishlist items
-      setTimeout(() => {
-        setWishlistItems([
-          {
-            id: "1",
-            dealId: "deal1",
-            title: "Séjour romantique à Paris",
-            destination: "Paris, France",
-            price: 299,
-            originalPrice: 399,
-            currency: "EUR",
-            image: "https://images.unsplash.com/photo-1502602898536-47ad22581b52?w=400&h=250&fit=crop",
-            rating: 4.8,
-            provider: "TravelExpert",
-            availableFrom: "2024-03-01",
-            availableTo: "2024-06-30",
-            addedAt: "2024-01-15"
-          },
-          {
-            id: "2",
-            dealId: "deal2", 
-            title: "Aventure à Tokyo",
-            destination: "Tokyo, Japon",
-            price: 899,
-            originalPrice: 1199,
-            currency: "EUR",
-            image: "https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=400&h=250&fit=crop",
-            rating: 4.9,
-            provider: "AsiaTravel",
-            availableFrom: "2024-04-01",
-            availableTo: "2024-08-31",
-            addedAt: "2024-01-20"
-          }
-        ]);
-        setLoading(false);
-      }, 1000);
+      fetchWishlist();
     } else {
       setLoading(false);
     }
   }, [user]);
 
-  const removeFromWishlist = (itemId: string) => {
-    setWishlistItems(items => items.filter(item => item.id !== itemId));
-    toast.success("Offre supprimée de votre liste de souhaits");
+  const fetchWishlist = async () => {
+    try {
+      const { data, error } = await supabase.functions.invoke('manage-wishlist', {
+        body: { action: 'get' }
+      });
+
+      if (error) throw error;
+      setWishlistItems(data?.items || []);
+    } catch (error) {
+      console.error('Error fetching wishlist:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load wishlist",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const calculateSavings = (price: number, originalPrice?: number) => {
-    if (!originalPrice) return 0;
-    return Math.round(((originalPrice - price) / originalPrice) * 100);
+  const removeFromWishlist = async (dealId: string) => {
+    try {
+      const { error } = await supabase.functions.invoke('manage-wishlist', {
+        body: { action: 'remove', deal_id: dealId }
+      });
+
+      if (error) throw error;
+      
+      setWishlistItems(prev => prev.filter(item => item.deal_id !== dealId));
+      toast({
+        title: "Removed",
+        description: "Deal removed from wishlist"
+      });
+    } catch (error) {
+      console.error('Error removing from wishlist:', error);
+      toast({
+        title: "Error",
+        description: "Failed to remove from wishlist",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const viewDeal = (dealId: string) => {
+    navigate(`/deals/${dealId}`);
   };
 
   if (!user) {
     return (
       <>
         <SEOHead 
-          title="Ma Liste de Souhaits - TravelAI"
-          description="Gérez votre liste de souhaits de voyages sur TravelAI"
+          title="My Wishlist - TravelAI"
+          description="Manage your travel wishlist on TravelAI"
         />
         <div className="min-h-screen bg-background">
           <Header />
@@ -98,10 +100,10 @@ const Wishlist = () => {
             <div className="container mx-auto px-4">
               <EmptyState
                 type="no-favorites"
-                title="Connectez-vous pour voir votre liste"
-                description="Vous devez être connecté pour accéder à votre liste de souhaits."
-                actionLabel="Se connecter"
-                onAction={() => window.location.href = "/login"}
+                title="Sign in to see your wishlist"
+                description="You must be logged in to access your wishlist."
+                actionLabel="Sign In"
+                onAction={() => navigate("/login")}
               />
             </div>
           </main>
@@ -115,8 +117,8 @@ const Wishlist = () => {
     return (
       <>
         <SEOHead 
-          title="Ma Liste de Souhaits - TravelAI"
-          description="Gérez votre liste de souhaits de voyages sur TravelAI"
+          title="My Wishlist - TravelAI"
+          description="Manage your travel wishlist on TravelAI"
         />
         <div className="min-h-screen bg-background">
           <Header />
@@ -138,8 +140,8 @@ const Wishlist = () => {
   return (
     <>
       <SEOHead 
-        title="Ma Liste de Souhaits - TravelAI"
-        description="Gérez votre liste de souhaits de voyages sur TravelAI"
+        title="My Wishlist - TravelAI"
+        description="Manage your travel wishlist on TravelAI"
       />
       <div className="min-h-screen bg-background">
         <Header />
@@ -148,30 +150,30 @@ const Wishlist = () => {
           <div className="container mx-auto px-4">
             <div className="max-w-6xl mx-auto">
               <div className="mb-8">
-                <h1 className="text-3xl font-bold mb-2 text-foreground">Ma Liste de Souhaits</h1>
+                <h1 className="text-3xl font-bold mb-2 text-foreground">My Wishlist</h1>
                 <p className="text-muted-foreground">
-                  {wishlistItems.length} offre{wishlistItems.length !== 1 ? 's' : ''} sauvegardée{wishlistItems.length !== 1 ? 's' : ''}
+                  {wishlistItems.length} deal{wishlistItems.length !== 1 ? 's' : ''} saved
                 </p>
               </div>
 
               {wishlistItems.length === 0 ? (
                 <EmptyState
                   type="no-favorites"
-                  title="Votre liste de souhaits est vide"
-                  description="Ajoutez des offres à votre liste de souhaits pour les retrouver facilement plus tard."
-                  actionLabel="Découvrir les offres"
-                  onAction={() => window.location.href = "/"}
+                  title="Your wishlist is empty"
+                  description="Add deals to your wishlist to find them easily later."
+                  actionLabel="Browse Deals"
+                  onAction={() => navigate("/")}
                 />
               ) : (
                 <div className="grid gap-6">
                   {wishlistItems.map((item) => (
                     <Card key={item.id} className="overflow-hidden hover:shadow-lg transition-shadow">
                       <div className="flex flex-col md:flex-row">
-                        {item.image && (
+                        {item.deal_image_url && (
                           <div className="md:w-80 h-48 md:h-auto">
                             <img 
-                              src={item.image} 
-                              alt={item.title}
+                              src={item.deal_image_url} 
+                              alt={item.deal_title}
                               className="w-full h-full object-cover"
                             />
                           </div>
@@ -180,26 +182,19 @@ const Wishlist = () => {
                         <div className="flex-1 p-6">
                           <div className="flex justify-between items-start mb-4">
                             <div className="flex-1">
-                              <CardTitle className="text-xl mb-2">{item.title}</CardTitle>
+                              <CardTitle className="text-xl mb-2">{item.deal_title}</CardTitle>
                               <div className="flex items-center text-muted-foreground mb-2">
                                 <MapPin className="w-4 h-4 mr-1" />
-                                <span className="text-sm">{item.destination}</span>
-                                {item.rating && (
-                                  <>
-                                    <span className="mx-2">•</span>
-                                    <Star className="w-4 h-4 fill-yellow-400 text-yellow-400 mr-1" />
-                                    <span className="text-sm">{item.rating}</span>
-                                  </>
-                                )}
+                                <span className="text-sm">{item.deal_destination}</span>
                               </div>
                               <div className="flex items-center text-sm text-muted-foreground mb-4">
-                                <span>Par {item.provider}</span>
-                                {item.availableFrom && (
-                                  <>
-                                    <span className="mx-2">•</span>
-                                    <Calendar className="w-4 h-4 mr-1" />
-                                    <span>Disponible jusqu'au {new Date(item.availableTo!).toLocaleDateString()}</span>
-                                  </>
+                                <Badge variant="secondary">{item.deal_category}</Badge>
+                                {item.deal_tags && item.deal_tags.length > 0 && (
+                                  <div className="flex gap-2 ml-2">
+                                    {item.deal_tags.slice(0, 2).map((tag, index) => (
+                                      <Badge key={index} variant="outline">{tag}</Badge>
+                                    ))}
+                                  </div>
                                 )}
                               </div>
                             </div>
@@ -207,40 +202,28 @@ const Wishlist = () => {
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={() => removeFromWishlist(item.id)}
+                              onClick={() => removeFromWishlist(item.deal_id)}
                               className="text-destructive hover:text-destructive"
                             >
                               <Trash2 className="w-4 h-4" />
                             </Button>
                           </div>
 
-                          <div className="flex flex-wrap gap-2 mb-4">
-                            {item.originalPrice && (
-                              <Badge variant="destructive">
-                                -{calculateSavings(item.price, item.originalPrice)}%
-                              </Badge>
-                            )}
-                          </div>
-
                           <div className="flex items-center justify-between">
                             <div className="flex items-center">
                               <div className="flex items-center">
                                 <Euro className="w-5 h-5 text-primary mr-1" />
-                                <span className="text-2xl font-bold text-primary">{item.price}</span>
+                                <span className="text-2xl font-bold text-primary">{item.deal_price}</span>
+                                <span className="text-sm text-muted-foreground ml-1">{item.deal_currency}</span>
                               </div>
-                              {item.originalPrice && (
-                                <span className="text-sm text-muted-foreground line-through ml-2">
-                                  €{item.originalPrice}
-                                </span>
-                              )}
                             </div>
                             
                             <div className="flex gap-2">
-                              <Button variant="outline">
-                                Comparer
-                              </Button>
-                              <Button>
-                                Voir l'offre
+                              <Button 
+                                onClick={() => viewDeal(item.deal_id)}
+                                className="bg-gradient-sunset hover:shadow-glow"
+                              >
+                                View Deal
                               </Button>
                             </div>
                           </div>
@@ -253,21 +236,21 @@ const Wishlist = () => {
 
               {wishlistItems.length > 0 && (
                 <div className="mt-8 p-6 bg-muted/30 rounded-lg">
-                  <h3 className="text-lg font-semibold mb-2 text-foreground">💡 Conseil TravelAI</h3>
+                  <h3 className="text-lg font-semibold mb-2 text-foreground">💡 TravelAI Tip</h3>
                   <p className="text-muted-foreground">
-                    Les prix peuvent fluctuer rapidement. Nous vous recommandons de surveiller vos offres favorites 
-                    et de réserver dès que le prix vous convient. Vous recevrez des alertes si les prix baissent !
+                    Prices can fluctuate quickly. We recommend monitoring your favorite deals 
+                    and booking as soon as the price is right. You'll receive alerts if prices drop!
                   </p>
                 </div>
-              )}
-            </div>
-          </div>
-        </main>
+               )}
+             </div>
+           </div>
+         </main>
 
-        <Footer />
-      </div>
-    </>
-  );
+         <Footer />
+       </div>
+     </>
+   );
 };
 
 export default Wishlist;

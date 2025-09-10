@@ -1,1 +1,51 @@
 project_id = "***REMOVED***"
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[db]
+port = 54322
+
+[studio]
+enabled = true
+port = 54323
+
+[inbucket]
+enabled = true
+port = 54324
+smtp_port = 54325
+pop3_port = 54326
+
+[storage]
+enabled = true
+port = 54327
+file_size_limit = "50MiB"
+
+[auth]
+enabled = true
+port = 54328
+site_url = "http://localhost:3000"
+additional_redirect_urls = ["https://localhost:3000"]
+jwt_expiry = 3600
+refresh_token_rotation_enabled = true
+security_update_password_require_reauthentication = true
+
+[edge_functions]
+enabled = true
+port = 54329
+
+[analytics]
+enabled = false
+port = 54330
+vector_port = 54331
+gw_port = 54332
+
+[functions.get-deals]
+verify_jwt = false
+
+[functions.newsletter-subscribe]
+verify_jwt = false

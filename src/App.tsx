@@ -5,15 +5,19 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
-import PrivacyPolicy from "./pages/PrivacyPolicy";
-import Terms from "./pages/Terms";
-import Contact from "./pages/Contact";
-import Blog from "./pages/Blog";
-import UserDashboard from "./components/UserDashboard";
-import AdminDashboard from "./components/AdminDashboard";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import ErrorBoundary from "./components/ErrorBoundary";
+import CookieConsent from "./components/CookieConsent";
+import PWAInstaller from "./components/PWAInstaller";
+import LazyWrapper, { 
+  LazyUserDashboard, 
+  LazyAdminDashboard, 
+  LazyBlog, 
+  LazyContact, 
+  LazyPrivacyPolicy, 
+  LazyTerms 
+} from "./components/LazyLoad";
 
 const queryClient = new QueryClient();
 
@@ -23,23 +27,54 @@ const App = () => (
       <TooltipProvider>
         <Toaster />
         <Sonner />
-        <BrowserRouter>
+        <BrowserRouter
+          future={{
+            v7_startTransition: true,
+            v7_relativeSplatPath: true
+          }}
+        >
           <div className="min-h-screen flex flex-col">
             <Header />
             <main className="flex-1">
               <Routes>
                 <Route path="/" element={<Index />} />
-                <Route path="/privacy" element={<PrivacyPolicy />} />
-                <Route path="/terms" element={<Terms />} />
-                <Route path="/contact" element={<Contact />} />
-                <Route path="/blog" element={<Blog />} />
-                <Route path="/dashboard" element={<UserDashboard />} />
-                <Route path="/admin" element={<AdminDashboard />} />
+                <Route path="/privacy" element={
+                  <LazyWrapper>
+                    <LazyPrivacyPolicy />
+                  </LazyWrapper>
+                } />
+                <Route path="/terms" element={
+                  <LazyWrapper>
+                    <LazyTerms />
+                  </LazyWrapper>
+                } />
+                <Route path="/contact" element={
+                  <LazyWrapper>
+                    <LazyContact />
+                  </LazyWrapper>
+                } />
+                <Route path="/blog" element={
+                  <LazyWrapper>
+                    <LazyBlog />
+                  </LazyWrapper>
+                } />
+                <Route path="/dashboard" element={
+                  <LazyWrapper>
+                    <LazyUserDashboard />
+                  </LazyWrapper>
+                } />
+                <Route path="/admin" element={
+                  <LazyWrapper>
+                    <LazyAdminDashboard />
+                  </LazyWrapper>
+                } />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </main>
             <Footer />
+            <CookieConsent />
+            <PWAInstaller />
           </div>
         </BrowserRouter>
       </TooltipProvider>

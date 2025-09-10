@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -67,6 +67,9 @@ const AuthModal = ({ isOpen, onClose, onSuccess }: AuthModalProps) => {
           <DialogTitle className="text-center text-2xl font-bold">
             Bienvenue sur TravelAI
           </DialogTitle>
+          <DialogDescription className="text-center text-muted-foreground">
+            Connectez-vous ou créez un compte pour accéder à nos packs IA personnalisés
+          </DialogDescription>
         </DialogHeader>
 
         <Tabs defaultValue="signin" className="w-full">

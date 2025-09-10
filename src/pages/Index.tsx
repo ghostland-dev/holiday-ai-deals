@@ -8,8 +8,11 @@ import NewsletterSection from "@/components/NewsletterSection";
 import ChatSupport from "@/components/ChatSupport";
 import SEOHead from "@/components/SEOHead";
 import PerformanceMonitor from "@/components/PerformanceMonitor";
+import { usePageTracking } from "@/components/LinkTracker";
 
 const Index = () => {
+  usePageTracking();
+  
   return (
     <>
       <SEOHead />

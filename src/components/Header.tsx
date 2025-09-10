@@ -25,20 +25,23 @@ const Header = () => {
           </div>
 
           {/* Desktop Navigation */}
-            <nav className="hidden md:flex items-center space-x-8">
-            <a href="#deals" className="text-foreground hover:text-primary transition-colors font-medium">
-              Deals
+          <nav className="hidden md:flex items-center space-x-8">
+            <a href="/" className="text-muted-foreground hover:text-foreground transition-colors">
+              Accueil
             </a>
-            <a href="#ai-packs" className="text-foreground hover:text-primary transition-colors font-medium">
-              Packs IA
-            </a>
-            <a href="#destinations" className="text-foreground hover:text-primary transition-colors font-medium">
+            <a href="/destinations" className="text-muted-foreground hover:text-foreground transition-colors">
               Destinations
             </a>
-            <a href="/blog" className="text-foreground hover:text-primary transition-colors font-medium">
-              Blog
+            <a href="/wishlist" className="text-muted-foreground hover:text-foreground transition-colors">
+              Favoris
             </a>
-            <a href="/contact" className="text-foreground hover:text-primary transition-colors font-medium">
+            <a href="/reviews" className="text-muted-foreground hover:text-foreground transition-colors">
+              Avis
+            </a>
+            <a href="/about" className="text-muted-foreground hover:text-foreground transition-colors">
+              À propos
+            </a>
+            <a href="/contact" className="text-muted-foreground hover:text-foreground transition-colors">
               Contact
             </a>
           </nav>
@@ -106,16 +109,19 @@ const Header = () => {
         {isMenuOpen && (
           <div className="md:hidden py-4 border-t border-border bg-white/95 backdrop-blur-sm">
             <nav className="flex flex-col space-y-3">
-              <a href="#deals" className="text-foreground hover:text-primary transition-colors font-medium py-2">
-                Deals
+              <a href="/" className="text-foreground hover:text-primary transition-colors font-medium py-2">
+                Accueil
               </a>
-              <a href="#ai-packs" className="text-foreground hover:text-primary transition-colors font-medium py-2">
-                Packs IA
-              </a>
-              <a href="#destinations" className="text-foreground hover:text-primary transition-colors font-medium py-2">
+              <a href="/destinations" className="text-foreground hover:text-primary transition-colors font-medium py-2">
                 Destinations
               </a>
-              <a href="#about" className="text-foreground hover:text-primary transition-colors font-medium py-2">
+              <a href="/wishlist" className="text-foreground hover:text-primary transition-colors font-medium py-2">
+                Favoris
+              </a>
+              <a href="/reviews" className="text-foreground hover:text-primary transition-colors font-medium py-2">
+                Avis
+              </a>
+              <a href="/about" className="text-foreground hover:text-primary transition-colors font-medium py-2">
                 À Propos
               </a>
               <div className="flex flex-col space-y-2 pt-4 border-t border-border">

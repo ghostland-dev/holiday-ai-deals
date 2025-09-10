@@ -1,3 +1,4 @@
+import { Suspense, lazy } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -8,6 +9,11 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
 import Success from "./pages/Success";
+import About from "./pages/About";
+import Destinations from "./pages/Destinations";
+import Wishlist from "./pages/Wishlist";
+import Reviews from "./pages/Reviews";
+import FAQ from "./pages/FAQ";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import ErrorBoundary from "./components/ErrorBoundary";
@@ -54,6 +60,11 @@ const App = () => (
                 <main className="flex-1">
                   <Routes>
                     <Route path="/" element={<Index />} />
+                    <Route path="/about" element={<About />} />
+                    <Route path="/destinations" element={<Destinations />} />
+                    <Route path="/wishlist" element={<Wishlist />} />
+                    <Route path="/reviews" element={<Reviews />} />
+                    <Route path="/faq" element={<FAQ />} />
                     <Route path="/success" element={<Success />} />
                     <Route 
                       path="/login" 

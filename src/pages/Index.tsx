@@ -1,4 +1,5 @@
 import HeroSection from "@/components/HeroSection";
+import SearchSection from "@/components/SearchSection";
 import DealsSection from "@/components/DealsSection";
 import AIPacksSection from "@/components/AIPacksSection";
 import DestinationsSection from "@/components/DestinationsSection";
@@ -23,6 +24,7 @@ const Index = () => {
       <PerformanceMonitor />
       <div className="w-full">
         <HeroSection />
+        <SearchSection />
         <section id="deals">
           <DealsSection />
         </section>
@@ -31,7 +33,9 @@ const Index = () => {
         </section>
         <DestinationsSection />
         <TestimonialsSection />
-        <NewsletterSection />
+        <section id="newsletter">
+          <NewsletterSection />
+        </section>
         <AboutSection />
       </div>
       <ChatSupport />

@@ -14,7 +14,179 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      bookings: {
+        Row: {
+          booking_details: Json | null
+          created_at: string
+          currency: string | null
+          deal_id: string
+          external_booking_id: string | null
+          id: string
+          status: string
+          total_price: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          booking_details?: Json | null
+          created_at?: string
+          currency?: string | null
+          deal_id: string
+          external_booking_id?: string | null
+          id?: string
+          status?: string
+          total_price: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          booking_details?: Json | null
+          created_at?: string
+          currency?: string | null
+          deal_id?: string
+          external_booking_id?: string | null
+          id?: string
+          status?: string
+          total_price?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bookings_deal_id_fkey"
+            columns: ["deal_id"]
+            isOneToOne: false
+            referencedRelation: "deals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      deals: {
+        Row: {
+          available_from: string | null
+          available_to: string | null
+          category: string
+          click_count: number | null
+          created_at: string
+          currency: string | null
+          description: string
+          destination: string
+          featured: boolean | null
+          id: string
+          image_url: string | null
+          max_participants: number | null
+          original_price: number | null
+          price: number
+          provider: string
+          provider_url: string | null
+          tags: string[] | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          available_from?: string | null
+          available_to?: string | null
+          category: string
+          click_count?: number | null
+          created_at?: string
+          currency?: string | null
+          description: string
+          destination: string
+          featured?: boolean | null
+          id?: string
+          image_url?: string | null
+          max_participants?: number | null
+          original_price?: number | null
+          price: number
+          provider: string
+          provider_url?: string | null
+          tags?: string[] | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          available_from?: string | null
+          available_to?: string | null
+          category?: string
+          click_count?: number | null
+          created_at?: string
+          currency?: string | null
+          description?: string
+          destination?: string
+          featured?: boolean | null
+          id?: string
+          image_url?: string | null
+          max_participants?: number | null
+          original_price?: number | null
+          price?: number
+          provider?: string
+          provider_url?: string | null
+          tags?: string[] | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      newsletter_subscriptions: {
+        Row: {
+          email: string
+          id: string
+          preferences: string[] | null
+          subscribed_at: string
+          unsubscribed_at: string | null
+        }
+        Insert: {
+          email: string
+          id?: string
+          preferences?: string[] | null
+          subscribed_at?: string
+          unsubscribed_at?: string | null
+        }
+        Update: {
+          email?: string
+          id?: string
+          preferences?: string[] | null
+          subscribed_at?: string
+          unsubscribed_at?: string | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          email: string
+          first_name: string | null
+          id: string
+          last_name: string | null
+          preferences: Json | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          email: string
+          first_name?: string | null
+          id?: string
+          last_name?: string | null
+          preferences?: Json | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          email?: string
+          first_name?: string | null
+          id?: string
+          last_name?: string | null
+          preferences?: Json | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

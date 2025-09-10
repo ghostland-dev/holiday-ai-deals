@@ -186,26 +186,40 @@ const DealsGrid = () => {
             }`}
           >
             <CardHeader className="pb-3">
-              <div className="flex items-start justify-between">
-                <div className="flex items-center gap-2">
-                  <Icon className="w-4 h-4 text-primary" />
-                  <Badge variant="secondary">{deal.category}</Badge>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={(e) => handleWishlist(deal.id, e)}
-                    className={`p-2 ${wishlisted[deal.id] ? 'text-red-500' : 'text-muted-foreground hover:text-red-500'}`}
-                  >
-                    <Heart className={`w-4 h-4 ${wishlisted[deal.id] ? 'fill-current' : ''}`} />
-                  </Button>
-                  {deal.featured && (
-                    <Badge className="bg-gradient-sunset text-white">
-                      <Star className="w-3 h-3 mr-1" />
-                      Populaire
-                    </Badge>
-                  )}
+              <div className="relative">
+                {deal.image_url && (
+                  <div className="w-full h-48 mb-4 rounded-lg overflow-hidden">
+                    <img 
+                      src={deal.image_url} 
+                      alt={deal.title}
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      onError={(e) => {
+                        e.currentTarget.src = '/placeholder.svg';
+                      }}
+                    />
+                  </div>
+                )}
+                <div className="flex items-start justify-between">
+                  <div className="flex items-center gap-2">
+                    <Icon className="w-4 h-4 text-primary" />
+                    <Badge variant="secondary">{deal.category}</Badge>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={(e) => handleWishlist(deal.id, e)}
+                      className={`p-2 ${wishlisted[deal.id] ? 'text-red-500' : 'text-muted-foreground hover:text-red-500'}`}
+                    >
+                      <Heart className={`w-4 h-4 ${wishlisted[deal.id] ? 'fill-current' : ''}`} />
+                    </Button>
+                    {deal.featured && (
+                      <Badge className="bg-gradient-sunset text-white">
+                        <Star className="w-3 h-3 mr-1" />
+                        Populaire
+                      </Badge>
+                    )}
+                  </div>
                 </div>
               </div>
               <CardTitle className="text-lg leading-tight">{deal.title}</CardTitle>

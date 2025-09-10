@@ -272,30 +272,39 @@ class MonitoringService {
         // Sentry integration would go here
       }
 
-      // Send to custom endpoint
-      await fetch(env.getApiUrl('/api/monitoring/errors'), {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(error)
-      });
+      // Only send to API in production or if explicitly enabled
+      if (env.get('NODE_ENV') === 'production' || env.get('ENABLE_MONITORING_API') === 'true') {
+        await fetch(env.getApiUrl('/api/monitoring/errors'), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(error)
+        });
+      }
     } catch (sendError) {
-      console.warn('[Monitoring] Failed to send error report:', sendError);
-      // Add back to queue for retry
-      this.errorQueue.push(error);
+      // Silently fail in development, log in production
+      if (env.get('NODE_ENV') === 'production') {
+        console.warn('[Monitoring] Failed to send error report:', sendError);
+      }
+      // Don't add back to queue to avoid infinite retry in dev
     }
   }
 
   private async sendMetric(metric: PerformanceMetric) {
     try {
-      await fetch(env.getApiUrl('/api/monitoring/metrics'), {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(metric)
-      });
+      // Only send to API in production or if explicitly enabled
+      if (env.get('NODE_ENV') === 'production' || env.get('ENABLE_MONITORING_API') === 'true') {
+        await fetch(env.getApiUrl('/api/monitoring/metrics'), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(metric)
+        });
+      }
     } catch (error) {
-      console.warn('[Monitoring] Failed to send metric:', error);
-      // Add back to queue for retry
-      this.metricsQueue.push(metric);
+      // Silently fail in development, log in production
+      if (env.get('NODE_ENV') === 'production') {
+        console.warn('[Monitoring] Failed to send metric:', error);
+      }
+      // Don't add back to queue to avoid infinite retry in dev
     }
   }
 

@@ -1,68 +1,73 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
+import { monitoring } from '@/utils/monitoring';
 
-const PerformanceMonitor = () => {
+export const PerformanceMonitor: React.FC = () => {
+  const mountTime = useRef(Date.now());
+
   useEffect(() => {
-    // Web Vitals monitoring
-    if ('web-vitals' in window) {
-      return;
-    }
+    const componentMountTime = Date.now() - mountTime.current;
+    monitoring.reportMetric('component-mount', componentMountTime);
 
-    // Simple performance monitoring
-    const observer = new PerformanceObserver((list) => {
-      for (const entry of list.getEntries()) {
-        // Log slow operations
-        if (entry.duration > 100) {
-          console.warn(`Slow operation detected: ${entry.name} took ${entry.duration}ms`);
-        }
-      }
-    });
-
-    observer.observe({ entryTypes: ['measure', 'navigation'] });
-
-    // Monitor Core Web Vitals
-    const reportWebVitals = () => {
-      // First Contentful Paint (FCP)
-      new PerformanceObserver((entryList) => {
-        const entries = entryList.getEntries();
-        entries.forEach((entry) => {
-          console.log(`FCP: ${entry.startTime}`);
-        });
-      }).observe({ type: 'paint', buffered: true });
-
-      // Largest Contentful Paint (LCP)
-      new PerformanceObserver((entryList) => {
-        const entries = entryList.getEntries();
-        const lastEntry = entries[entries.length - 1];
-        console.log(`LCP: ${lastEntry.startTime}`);
-      }).observe({ type: 'largest-contentful-paint', buffered: true });
-
-      // Cumulative Layout Shift (CLS)
-      let clsValue = 0;
-      new PerformanceObserver((entryList) => {
-        for (const entry of entryList.getEntries()) {
-          // Type assertion for layout-shift entries
-          const layoutEntry = entry as any;
-          if (layoutEntry.hadRecentInput !== undefined && !layoutEntry.hadRecentInput) {
-            clsValue += layoutEntry.value || 0;
-          }
-        }
-        console.log(`CLS: ${clsValue}`);
-      }).observe({ type: 'layout-shift', buffered: true });
+    // Monitor route changes
+    const handleRouteChange = () => {
+      monitoring.logPageView(window.location.pathname);
     };
 
-    // Run performance monitoring
-    if (document.readyState === 'complete') {
-      reportWebVitals();
-    } else {
-      window.addEventListener('load', reportWebVitals);
-    }
+    // Monitor visibility changes
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        monitoring.reportMetric('app-focus', 1);
+      } else {
+        monitoring.reportMetric('app-blur', 1);
+      }
+    };
+
+    // Monitor memory usage periodically
+    const memoryInterval = setInterval(() => {
+      if ('memory' in performance) {
+        const memory = (performance as any).memory;
+        monitoring.reportMetric('memory-usage', memory.usedJSHeapSize, {
+          total: memory.totalJSHeapSize,
+          limit: memory.jsHeapSizeLimit
+        });
+      }
+    }, 30000); // Every 30 seconds
+
+    // Monitor slow interactions
+    let interactionStartTime: number;
+    const handleInteractionStart = () => {
+      interactionStartTime = performance.now();
+    };
+
+    const handleInteractionEnd = () => {
+      if (interactionStartTime) {
+        const interactionTime = performance.now() - interactionStartTime;
+        if (interactionTime > 100) { // Log interactions longer than 100ms
+          monitoring.reportMetric('slow-interaction', interactionTime);
+        }
+      }
+    };
+
+    // Add event listeners
+    window.addEventListener('popstate', handleRouteChange);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    document.addEventListener('mousedown', handleInteractionStart);
+    document.addEventListener('mouseup', handleInteractionEnd);
+    document.addEventListener('keydown', handleInteractionStart);
+    document.addEventListener('keyup', handleInteractionEnd);
 
     return () => {
-      observer.disconnect();
+      clearInterval(memoryInterval);
+      window.removeEventListener('popstate', handleRouteChange);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      document.removeEventListener('mousedown', handleInteractionStart);
+      document.removeEventListener('mouseup', handleInteractionEnd);
+      document.removeEventListener('keydown', handleInteractionStart);
+      document.removeEventListener('keyup', handleInteractionEnd);
     };
   }, []);
 
-  return null;
+  return null; // This component doesn't render anything
 };
 
 export default PerformanceMonitor;

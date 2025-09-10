@@ -15,6 +15,7 @@ export interface Environment {
   SUPABASE_ANON_KEY?: string;
   STRIPE_PUBLISHABLE_KEY?: string;
   RECAPTCHA_SITE_KEY?: string;
+  ENABLE_MONITORING_API?: string;
   APP_VERSION: string;
   APP_NAME: string;
   APP_DOMAIN: string;
@@ -52,6 +53,7 @@ class EnvironmentManager {
       SUPABASE_ANON_KEY: import.meta.env.VITE_SUPABASE_ANON_KEY,
       STRIPE_PUBLISHABLE_KEY: import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY,
       RECAPTCHA_SITE_KEY: import.meta.env.VITE_RECAPTCHA_SITE_KEY,
+      ENABLE_MONITORING_API: import.meta.env.VITE_ENABLE_MONITORING_API,
       APP_VERSION: import.meta.env.VITE_APP_VERSION || '1.0.0',
       APP_NAME: import.meta.env.VITE_APP_NAME || 'TravelAI',
       APP_DOMAIN: import.meta.env.VITE_APP_DOMAIN || 'travelai.com'
